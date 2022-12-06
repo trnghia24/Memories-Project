@@ -1,5 +1,4 @@
-# Memories-Project
-MEMORIES ARCHIVE PROJECT - A home to all of your memories
+# MEMORIES ARCHIVE PROJECT - A home to all of your memories
 Implemented with MERN stack, this is my first full-stack CRUD project made to create,read, update and delete your memory cards. 
 This project started while I needed to learn web app technoligies such as React JS, Redux and communication between front- and back-end site.
 
