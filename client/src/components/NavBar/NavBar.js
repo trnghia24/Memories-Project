@@ -1,12 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import memories from "../../images/memories.png";
 import { AppBar, Typography, Toolbar, Avatar, Button } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useStyles from "./styles";
+import { useDispatch } from "react-redux";
 
 const NavBar = () => {
+	const location = useLocation();
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const classes = useStyles();
-	const user = null;
+	const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
+
+	// to avoid manually refresing the page to update user details on Nav Bar whenever sigining in
+	useEffect(() => {
+		setUser(JSON.parse(localStorage.getItem("profile")));
+	}, [location]);
+
+	const logout = () => {
+		dispatch({ type: "LOG_OUT" });
+		navigate("/");
+		setUser(null);
+	};
 
 	return (
 		<AppBar className={classes.appBar} position="static" color="inherit">
@@ -32,7 +47,7 @@ const NavBar = () => {
 						<Avatar
 							className={classes.purple}
 							alt={user?.result.name}
-							src={user?.result.imageUrl}>
+							src={user?.result.picture}>
 							{user?.result.name.charAt(0)}
 						</Avatar>
 						<Typography className={classes.userName} variant="h6">
@@ -42,8 +57,8 @@ const NavBar = () => {
 							variant="contained"
 							className={classes.logout}
 							color="secondary"
-							onClick="{logout}">
-							Logout
+							onClick={logout}>
+							Log Out
 						</Button>
 					</div>
 				) : (

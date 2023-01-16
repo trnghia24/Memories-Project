@@ -7,12 +7,19 @@ import {
 	Button,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import { GoogleLogin } from "@react-oauth/google";
 import { Link } from "@mui/material";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Input from "./Input";
 import useStyles from "./styles";
+import Icon from "./Icon";
+import { useDispatch } from "react-redux";
+import jwt_decode from "jwt-decode";
 
 const Auth = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const classes = useStyles();
 
 	const [isSignUp, setIsSignUp] = useState(false);
@@ -29,6 +36,37 @@ const Auth = () => {
 		setIsSignUp((prev) => !prev);
 	};
 
+	const googleSuccess = async (res) => {
+		// NOTE: token last for about an hour
+		const credential = res?.credential;
+		const result = jwt_decode(credential);
+
+		try {
+			dispatch({ type: "AUTH", data: { result, token: credential } });
+			navigate("/");
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const googleFailure = (error) => {
+		console.log(error);
+		console.log("Sign In Google unsuccessfully");
+	};
+
+	const googleRender = (renderProps) => {
+		return (
+			<Button
+				className={classes.googleButton}
+				color="primary"
+				fullWidth
+				onClick={renderProps.onClick}
+				// disabled={renderProps.disabled}
+				startIcon={<Icon />}
+				variant="contained"></Button>
+		);
+	};
+
 	const handleSubmit = () => {};
 	return (
 		<Container component="main" maxWidth="xs">
@@ -38,9 +76,14 @@ const Auth = () => {
 				</Avatar>
 
 				<Typography variant="h5">{isSignUp ? "Sign Up" : "Sign In"}</Typography>
+
 				<form className={classes.form} onSubmit={handleSubmit}>
-					<Grid container spacing={2}>
-						{isSignUp && (
+					<Grid
+						container
+						spacing={2}
+						justifyContent="center"
+						alignItems="center">
+						{isSignUp ? (
 							<>
 								<Input
 									name="firstName"
@@ -49,6 +92,7 @@ const Auth = () => {
 									autoFocus
 									half
 								/>
+
 								<Input
 									name="lastName"
 									label="Last Name"
@@ -56,7 +100,8 @@ const Auth = () => {
 									half
 								/>
 							</>
-						)}
+						) : null}
+
 						<Input
 							name="email"
 							label="Email Address"
@@ -64,6 +109,7 @@ const Auth = () => {
 							type="email"
 							autoFocus
 						/>
+
 						<Input
 							name="password"
 							label="Password"
@@ -71,24 +117,34 @@ const Auth = () => {
 							type={showPassword ? "text" : "password"}
 							handleShowPassword={handleShowPassword}
 						/>
-						{isSignUp && (
+
+						{isSignUp ? (
 							<Input
 								name="confirmPassword"
 								label="Confirm Password"
 								handleChange={handleChange}
 								type="password"
 							/>
-						)}
+						) : null}
+
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							color="primary"
+							className={classes.submit}>
+							{isSignUp ? "Sign Up" : "Sign In"}
+						</Button>
+
+						<GoogleLogin
+							render={googleRender}
+							onSuccess={googleSuccess}
+							onFailure={googleFailure}
+							cookiePolicy="single_host_origin"
+						/>
 					</Grid>
-					<Button
-						type="submit"
-						fullWidth
-						variant="contained"
-						color="primary"
-						className={classes.submit}>
-						{isSignUp ? "Sign Up" : "Sign In"}
-					</Button>
-					<Grid container justify="center" alignItems="center">
+
+					<Grid container justifyContent="center" alignItems="center">
 						<Grid item>
 							<Typography variant="body1">
 								{isSignUp
