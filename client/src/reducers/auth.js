@@ -7,6 +7,7 @@ const auth = (state = { authData: null }, action) => {
 
 		case LOG_OUT:
 			localStorage.clear();
+			window.location.reload();
 			return { ...state, authData: null };
 		default:
 			return state;

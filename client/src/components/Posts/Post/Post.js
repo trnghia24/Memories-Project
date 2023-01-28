@@ -14,10 +14,31 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import moment from "moment";
 import { useDispatch } from "react-redux";
 import { deletePost, likePost } from "../../../actions/posts";
+import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
+import ThumbUpAltOutlined from "@material-ui/icons/ThumbUpAltOutlined";
 
 const Post = ({ post, setCurrentId }) => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
+	const user = JSON.parse(localStorage.getItem("profile"));
+
+	const Likes = () => {
+		const alreadyLiked = post.likes.find(
+			(id) => id === (user.result?.sub || user.result?.id)
+		);
+
+		return alreadyLiked ? (
+			<>
+				<ThumbUpAltIcon fontSize="small" />
+				&nbsp; Liked &nbsp;
+			</>
+		) : (
+			<>
+				<ThumbUpAltOutlined fontSize="small" />
+				&nbsp; Like &nbsp;
+			</>
+		);
+	};
 
 	return (
 		<Card className={classes.card}>
@@ -27,7 +48,7 @@ const Post = ({ post, setCurrentId }) => {
 				title={post.title}
 			/>
 			<div className={classes.overlay}>
-				<Typography variant="h6">{post.creator}</Typography>
+				<Typography variant="h6">{post.name}</Typography>
 				<Typography variant="body2">
 					{moment(post.createdAt).fromNow()}
 				</Typography>
@@ -66,6 +87,7 @@ const Post = ({ post, setCurrentId }) => {
 					<ThumbUpAltIcon fontSize="small" />
 					&nbsp; Like &nbsp;
 					{post.likeCount}
+					{/* <Likes /> */}
 				</Button>
 
 				<Button

@@ -16,17 +16,25 @@ import useStyles from "./styles";
 import Icon from "./Icon";
 import { useDispatch } from "react-redux";
 import jwt_decode from "jwt-decode";
+import { signin, signup } from "../../actions/auth";
 
 const Auth = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const classes = useStyles();
+	const INITIAL_FORM_DATA = {
+		firstName: "",
+		lastName: "",
+		email: "",
+		password: "",
+		confirmPassword: "",
+	};
 
 	const [isSignUp, setIsSignUp] = useState(false);
 
 	const [showPassword, setShowPassword] = useState(false);
 
-	const handleChange = () => {};
+	const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
 	const handleShowPassword = () => {
 		setShowPassword((prev) => !prev);
@@ -67,7 +75,20 @@ const Auth = () => {
 		);
 	};
 
-	const handleSubmit = () => {};
+	const handleChange = (e) => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+
+		if (isSignUp) {
+			dispatch(signup(formData, navigate));
+		} else {
+			dispatch(signin(formData, navigate));
+		}
+	};
+
 	return (
 		<Container component="main" maxWidth="xs">
 			<Paper className={classes.paper} elevation={3}>

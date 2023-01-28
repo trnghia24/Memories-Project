@@ -10,7 +10,7 @@ import useStyles from "./styles";
 
 const Form = ({ currentId, setCurrentId }) => {
 	const [postData, setPostData] = useState({
-		creator: "",
+		// creator: "",
 		title: "",
 		message: "",
 		tags: "",
@@ -21,12 +21,13 @@ const Form = ({ currentId, setCurrentId }) => {
 		currentId ? state.posts.find((p) => p._id === currentId) : null
 	);
 
+	const classes = useStyles();
+	const dispatch = useDispatch();
+	const user = JSON.parse(localStorage.getItem("profile"));
+
 	useEffect(() => {
 		if (post) setPostData(post);
 	}, [post]);
-
-	const classes = useStyles();
-	const dispatch = useDispatch();
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -34,7 +35,7 @@ const Form = ({ currentId, setCurrentId }) => {
 		if (currentId) {
 			dispatch(updatePost(currentId, postData));
 		} else {
-			dispatch(createPost(postData));
+			dispatch(createPost({ ...postData, name: user?.result?.name }));
 		}
 		clear();
 	};
@@ -50,6 +51,16 @@ const Form = ({ currentId, setCurrentId }) => {
 		});
 	};
 
+	if (!user?.result?.name) {
+		return (
+			<Paper className={classes.paper}>
+				<Typography variant="h6" align="center">
+					Sign in to create memories and more
+				</Typography>
+			</Paper>
+		);
+	}
+
 	return (
 		<Paper className={classes.paper}>
 			<form
@@ -61,7 +72,7 @@ const Form = ({ currentId, setCurrentId }) => {
 					{currentId ? "Editing" : "Creating"} a Memory
 				</Typography>
 
-				<TextField
+				{/* <TextField
 					name="creator"
 					variant="outlined"
 					label="Creator"
@@ -70,7 +81,7 @@ const Form = ({ currentId, setCurrentId }) => {
 					onChange={(event) => {
 						setPostData({ ...postData, creator: event.target.value });
 					}}
-				/>
+				/> */}
 				<TextField
 					name="title"
 					variant="outlined"
